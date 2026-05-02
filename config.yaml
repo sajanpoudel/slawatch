@@ -1,0 +1,28 @@
+# slawatch config for project slawatch-live-demo
+# Auth: Application Default Credentials (gcloud auth application-default login)
+
+project: slawatch-live-demo
+eval_window: 1h
+
+output:
+  formats:
+    - markdown
+    - json
+  directory: ./reports
+
+fail_on_breach: true
+
+targets:
+  # Cloud Run service: slawatch-demo
+  # URL: https://slawatch-demo-hhbtgijqfq-uc.a.run.app
+  # Region: us-central1
+  - name: slawatch-demo
+    kind: cloud_run
+    service: slawatch-demo
+    region: us-central1
+    slo:
+      availability: 0.9999
+      latency_p99_ms: 2000
+    sla:
+      gpu: false
+      zonal_redundancy: true

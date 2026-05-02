@@ -1,0 +1,30 @@
+{
+  "project": "slawatch-live-demo",
+  "generated_at": "2026-05-01T06:12:46+00:00",
+  "sla_catalog_verified_at": "2026-04-30",
+  "evaluations": [
+    {
+      "target_name": "slawatch-demo",
+      "service": "slawatch-demo",
+      "region": "us-central1",
+      "eval_start": "2026-05-01T05:12:00+00:00",
+      "eval_end": "2026-05-01T06:12:00+00:00",
+      "total_minutes": 60,
+      "eligible_minutes": 1,
+      "downtime_minutes": 0,
+      "monthly_uptime": 1.0,
+      "sla_floor": 0.9995,
+      "sla_variant": "non_gpu",
+      "slo_target": 0.9999,
+      "error_budget_seconds": 0.35999999999996035,
+      "error_budget_consumed_seconds": 0,
+      "error_budget_remaining_pct": 1.0,
+      "downtime_periods": [],
+      "latency_p99_ms": 9.9,
+      "latency_p99_threshold_ms": 2000.0,
+      "verdict": "passing",
+      "credit_tier_pct": 0,
+      "notes": []
+    }
+  ]
+}

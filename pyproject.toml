@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "slawatch"
+version = "0.1.0"
+description = "GCP SLA compliance monitoring for Cloud Run services"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Sajan Poudel" },
+]
+dependencies = [
+    "click>=8.1.7",
+    "google-cloud-monitoring>=2.21.0",
+    "pydantic>=2.5",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+]
+
+[project.scripts]
+slawatch = "slawatch.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["slawatch*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"

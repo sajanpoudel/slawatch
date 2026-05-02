@@ -1,0 +1,47 @@
+# slawatch config, shows the full schema across three Cloud Run targets.
+# Replace project and service names to match your GCP setup.
+# The real config used against slawatch-live-demo is at ../config.yaml.
+
+project: your-gcp-project
+eval_window: 30d
+
+output:
+  formats:
+    - markdown
+    - json
+  directory: ./reports
+
+fail_on_breach: true
+
+targets:
+  # Standard Cloud Run service, four-nines SLO with latency tracking.
+  - name: payments-api
+    kind: cloud_run
+    service: payments-api
+    region: us-central1
+    slo:
+      availability: 0.9999
+      latency_p99_ms: 800
+    sla:
+      gpu: false
+      zonal_redundancy: true
+
+  # Service in europe-west1, three nines SLO, longer latency budget.
+  - name: analytics-ingester
+    kind: cloud_run
+    service: analytics-ingester
+    region: europe-west1
+    slo:
+      availability: 0.9995
+      latency_p99_ms: 2000
+
+  # GPU workload with zonal redundancy, SLA floor stays at 99.95%.
+  - name: image-classifier
+    kind: cloud_run
+    service: image-classifier
+    region: us-central1
+    slo:
+      availability: 0.9995
+    sla:
+      gpu: true
+      zonal_redundancy: true

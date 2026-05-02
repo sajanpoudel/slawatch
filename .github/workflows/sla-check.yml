@@ -1,0 +1,61 @@
+# Daily SLA compliance check.
+#
+# Runs at 07:00 UTC. It always validates the config, and it runs the live
+# Cloud Monitoring check when the GCP Workload Identity variables are set.
+#
+# Authentication uses Workload Identity Federation, no service account keys
+# to rotate. Set GCP_WIF_PROVIDER and GCP_SLAWATCH_SA in repo variables.
+
+name: sla-check
+
+on:
+  schedule:
+    - cron: "0 7 * * *"  # 07:00 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install slawatch
+        run: pip install .
+
+      - name: Validate config
+        run: slawatch validate --config config.yaml
+
+      - name: Authenticate to Google Cloud
+        if: ${{ vars.GCP_WIF_PROVIDER != '' && vars.GCP_SLAWATCH_SA != '' }}
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SLAWATCH_SA }}
+
+      - name: Run SLA check
+        if: ${{ vars.GCP_WIF_PROVIDER != '' && vars.GCP_SLAWATCH_SA != '' }}
+        run: slawatch check --config config.yaml
+        # Exit codes:
+        #   0  all targets passing
+        #   1  at least one warning
+        #   2  at least one breaching the SLA floor
+        #   3  config or runtime error
+
+      - name: Upload reports as workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sla-reports
+          path: reports/
+          retention-days: 90
